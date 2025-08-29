@@ -6,12 +6,13 @@
 <div class="p-4">
     <!-- Filters -->
     <form method="GET" class="mb-4 flex space-x-2">
-        <select name="status" class="border rounded px-2 py-1">
-            <option value="">All Status</option>
-            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-            <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
-        </select>
+ <select name="status" class="border rounded px-2 py-1">
+    <option value="">All Status</option>
+    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+</select>
+
 
         <input type="text" name="customer_id" placeholder="Customer ID" value="{{ request('customer_id') }}" class="border rounded px-2 py-1">
         <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Filter</button>
@@ -49,15 +50,24 @@
                     </form>
 
                     <!-- Change Status Dropdown -->
-                    <form action="{{ route('orders.update', $order) }}" method="POST" class="inline">
-                        @csrf
-                        @method('PATCH')
-                        <select name="status" onchange="this.form.submit()" class="border rounded px-1 py-0.5">
-                            <option value="pending" {{ $order->status=='pending'?'selected':'' }}>Pending</option>
-                            <option value="completed" {{ $order->status=='completed'?'selected':'' }}>Completed</option>
-                            <option value="canceled" {{ $order->status=='canceled'?'selected':'' }}>Canceled</option>
-                        </select>
-                    </form>
+ <form action="{{ route('orders.update', $order) }}" method="POST" class="inline">
+    @csrf
+    @method('PATCH')
+    
+    <select name="status" onchange="this.form.submit()" 
+        class="border rounded px-2 py-1 font-semibold
+            @if($order->status == 'pending') bg-yellow-100 text-yellow-800 border-yellow-300 
+            @elseif($order->status == 'completed') bg-green-100 text-green-800 border-green-300 
+            @elseif($order->status == 'canceled') bg-red-100 text-red-800 border-red-300 
+            @endif">
+        
+        <option value="pending" {{ $order->status=='pending'?'selected':'' }}>Pending</option>
+        <option value="completed" {{ $order->status=='completed'?'selected':'' }}>Completed</option>
+        <option value="canceled" {{ $order->status=='canceled'?'selected':'' }}>Canceled</option>
+    </select>
+</form>
+
+
                 </td>
             </tr>
             @endforeach

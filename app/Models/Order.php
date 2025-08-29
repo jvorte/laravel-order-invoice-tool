@@ -13,4 +13,6 @@ class Order extends Model
     public function customer() {
         return $this->belongsTo(Customer::class);
     }
+
+    
 }

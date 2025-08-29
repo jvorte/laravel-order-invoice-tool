@@ -47,11 +47,9 @@ laravel-order-invoice-tool/
 │
 └─ README.md  # Setup guide, demo login, API keys, etc.
 
-Οκέι, πάμε σε **προσγειωμένο blueprint για ένα Laravel Order Notification & Invoice Tool**, έτοιμο να ξεκινήσεις και να πουλήσεις online.
 
----
 
-## **1. Project Name**
+
 
 **Laravel Order & Invoice Automation Tool**
 

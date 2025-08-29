@@ -68,16 +68,18 @@ public function edit(Order $order) {
     return view('admin.orders.edit', compact('order'));
 }
 
-public function update(Request $request, Order $order) {
+public function update(Request $request, Order $order)
+{
     $request->validate([
-        'status' => 'required|in:pending,completed,canceled',
-        'total' => 'required|numeric',
+        'status' => 'required|in:pending,completed,cancelled',
+        'total' => 'nullable|numeric|min:0',
     ]);
 
-    $order->update($request->only('status', 'total'));
+    $order->update($request->only('status','total'));
 
-    return redirect()->route('orders.index')->with('success', 'Order updated successfully.');
+    return redirect()->back()->with('success','Order updated!');
 }
+
 
 public function destroy(Order $order) {
     $order->delete();

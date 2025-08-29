@@ -26,18 +26,26 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        // Δημιουργία demo order
-        $order = Order::create([
-            'customer_id' => $customer->id,
-            'status' => 'pending',
-            'total' => 99.99
-        ]);
+        $statuses = ['pending', 'completed', 'cancelled'];
 
-        // Δημιουργία demo invoice
-        Invoice::create([
-            'order_id' => $order->id,
-            'file_path' => 'invoices/demo-invoice.pdf'
-        ]);
+        for ($i = 1; $i <= 10; $i++) {
+            $status = $statuses[array_rand($statuses)];
+            $total = rand(50, 500); // τυχαίο total ανά παραγγελία
+
+            $order = Order::create([
+                'customer_id' => $customer->id,
+                'status' => $status,
+                'total' => $total
+            ]);
+
+            // Δημιουργία demo invoice μόνο για completed orders
+            if ($status === 'completed') {
+                Invoice::create([
+                    'order_id' => $order->id,
+                    'file_path' => "invoices/demo-invoice-{$i}.pdf"
+                ]);
+            }
+        }
 
         $this->command->info('Demo data seeded successfully!');
     }
