@@ -8,36 +8,41 @@ use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
-public function dashboard() {
-    $totalOrders = Order::count();
-    $pendingOrders = Order::where('status','pending')->count();
+public function dashboard()
+{
+    // Τα δικά σου ήδη υπάρχοντα:
+    $totalOrders     = Order::count();
+    $pendingOrders   = Order::where('status','pending')->count();
     $completedOrders = Order::where('status','completed')->count();
-    $totalInvoices = Invoice::count();
-    $totalRevenue = Order::where('status','completed')->sum('total');
+    $totalInvoices   = Invoice::count();
+    $totalRevenue    = Order::where('status','completed')->sum('total');
 
-    // Trends for last 30 days
-    $ordersTrend = Order::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('count(*) as total')
-        )
-        ->where('created_at','>=',now()->subDays(30))
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+    // ---- ΝΕΑ: Orders ανά status (για pie/doughnut) ----
+    $ordersByStatus = Order::select('status', DB::raw('COUNT(*) as count'))
+        ->groupBy('status')
+        ->pluck('count', 'status'); // π.χ. ['pending'=>5,'completed'=>8,'cancelled'=>2]
 
-    $revenueTrend = Order::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('sum(total) as total')
+    // ---- ΝΕΑ: Revenue ανά μήνα (τελευταίοι 12 μήνες) ----
+    $months = collect(range(0, 11))
+        ->map(fn($i) => now()->subMonths(11 - $i)->startOfMonth());
+
+    $monthlyRevenueRaw = Order::where('status', 'completed')
+        ->where('created_at', '>=', $months->first())
+        ->select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as ym"),
+            DB::raw('SUM(total) as revenue')
         )
-        ->where('status','completed')
-        ->where('created_at','>=',now()->subDays(30))
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+        ->groupBy('ym')
+        ->pluck('revenue', 'ym'); // π.χ. ['2025-01'=>1234.50, ...]
+
+    $monthLabels = $months->map(fn($d) => $d->format('M Y'));          // ['Sep 2024', ...]
+    $monthlyRevenue = $months->map(
+        fn($d) => (float) ($monthlyRevenueRaw[$d->format('Y-m')] ?? 0)
+    );                                                                  // [0, 120.5, 89, ...]
 
     return view('admin.dashboard', compact(
         'totalOrders','pendingOrders','completedOrders','totalInvoices','totalRevenue',
-        'ordersTrend','revenueTrend'
+        'ordersByStatus','monthLabels','monthlyRevenue'
     ));
 }
 
