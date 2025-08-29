@@ -13,6 +13,7 @@ public function dashboard()
     // Τα δικά σου ήδη υπάρχοντα:
     $totalOrders     = Order::count();
     $pendingOrders   = Order::where('status','pending')->count();
+        $cancelledOrders   = Order::where('status','cancelled')->count();
     $completedOrders = Order::where('status','completed')->count();
     $totalInvoices   = Invoice::count();
     $totalRevenue    = Order::where('status','completed')->sum('total');
@@ -41,7 +42,7 @@ public function dashboard()
     );                                                                  // [0, 120.5, 89, ...]
 
     return view('admin.dashboard', compact(
-        'totalOrders','pendingOrders','completedOrders','totalInvoices','totalRevenue',
+        'totalOrders','pendingOrders','completedOrders','totalInvoices','totalRevenue','cancelledOrders',
         'ordersByStatus','monthLabels','monthlyRevenue'
     ));
 }
