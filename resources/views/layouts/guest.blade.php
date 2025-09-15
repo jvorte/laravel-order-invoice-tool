@@ -14,9 +14,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-<body class="bg-[url('/images/office.jpg')] bg-cover bg-center min-h-screen">
+<body class="" style="background-image: url('{{ asset('storage/images/office.jpg') }}'); background-size: cover; background-position: center;">
 
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 ">
             <div>
                 <a href="/">
                     <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
